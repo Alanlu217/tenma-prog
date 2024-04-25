@@ -42,35 +42,16 @@ impl TenmaScript {
                 Some(s) => {
                     match s.as_str() {
                         keywords::VOLTAGE_KEY => {
-                            match parse_voltage(tokens) {
-                                Ok(c) => {
-                                    x.push(c);
-                                }
-                                Err(e) => {
-                                    return Err(e);
-                                }
-                            }
+                            x.push(parse_voltage(tokens)?);
                         }
                         keywords::CURRENT_KEY => {
-                            match parse_current(tokens) {
-                                Ok(c) => {
-                                    x.push(c);
-                                }
-                                Err(e) => {
-                                    return Err(e);
-                                }
-                            }
+                            x.push(parse_current(tokens)?);
                         }
                         keywords::OFF_KEY => {
                             x.push(TenmaScriptCommand::V { voltage: 0 });
                         }
                         keywords::DELAY_KEY => {
-                            match parse_delay(tokens) {
-                                Ok(c) => x.push(c),
-                                Err(e) => {
-                                    return Err(e);
-                                }
-                            }
+                            x.push(parse_delay(tokens)?);
                         }
 
                         _ => {
