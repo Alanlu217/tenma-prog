@@ -1,3 +1,11 @@
+mod config;
+
+use std::env;
+
 fn main() {
-    println!("Hello, world!");
+    let args = env::args().collect();
+
+    let config = config::Config::from_args(&args);
+
+    dbg!("{}", config.unwrap());
 }
