@@ -1,5 +1,5 @@
 mod keywords;
-mod TenmaScriptParser;
+mod tenma_script_parser;
 
 use std::{ fmt::Display, fs, iter::Peekable };
 
@@ -7,7 +7,13 @@ use crate::tenma_serial::TenmaSerial;
 
 use self::{
     keywords::TenmaScriptCommand,
-    TenmaScriptParser::{ parse_current, parse_delay, parse_loop_start, parse_voltage, ParseError },
+    tenma_script_parser::{
+        parse_current,
+        parse_delay,
+        parse_loop_start,
+        parse_voltage,
+        ParseError,
+    },
 };
 
 pub struct TenmaScript {
@@ -37,7 +43,7 @@ impl TenmaScript {
     ) -> Result<Vec<TenmaScriptCommand>, ParseError> {
         fn internal(
             tokens: &mut Peekable<impl Iterator<Item = String>>,
-            isLoop: bool
+            is_loop: bool
         ) -> Result<Vec<TenmaScriptCommand>, ParseError> {
             let mut x: Vec<TenmaScriptCommand> = vec![];
             loop {
@@ -79,7 +85,7 @@ impl TenmaScript {
                         }
                     }
                     None => {
-                        if isLoop {
+                        if is_loop {
                             return Err(ParseError::LoopEndNotFound);
                         }
                         return Ok(x);
@@ -91,6 +97,7 @@ impl TenmaScript {
         internal(tokens, false)
     }
 
+    #[allow(dead_code)]
     pub fn display_tenma_scripts(&self) {
         println!("{}", self.to_string());
     }

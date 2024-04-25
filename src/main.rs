@@ -3,7 +3,6 @@ mod scripts;
 mod tenma_serial;
 
 use scripts::TenmaScript;
-use tenma_serial::tenma_commands::TenmaCommand;
 
 use std::env;
 use std::process::exit;

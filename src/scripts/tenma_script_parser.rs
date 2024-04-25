@@ -1,16 +1,12 @@
 use core::time;
-use std::{ iter::Peekable, net::ToSocketAddrs };
+use std::iter::Peekable;
 
 use super::keywords::{ delay_unit_to_duration, TenmaScriptCommand };
 
 #[derive(Debug)]
 pub enum ParseError {
-    InvalidFile(std::io::Error),
     InvalidSymbol {
         symbol: String,
-    },
-    InvalidSyntax {
-        line: String,
     },
     LoopEndNotFound,
     IntParseError {
