@@ -12,9 +12,7 @@ pub enum ParseError {
     InvalidSyntax {
         line: String,
     },
-    LoopEndNotFound {
-        loop_start_line: String,
-    },
+    LoopEndNotFound,
     IntParseError {
         symbol: String,
     },
@@ -81,4 +79,19 @@ pub fn parse_delay(
     }
 
     Ok(TenmaScriptCommand::Delay { milliseconds: time.as_millis() as u32 })
+}
+
+pub fn parse_loop_start(tokens: &mut impl Iterator<Item = String>) -> Result<u32, ParseError> {
+    match tokens.next() {
+        Some(s) => {
+            if let Ok(num) = s.parse::<u32>() {
+                return Ok(num);
+            } else {
+                return Err(ParseError::IntParseError { symbol: s });
+            }
+        }
+        None => {
+            return Err(ParseError::MissingValue);
+        }
+    }
 }

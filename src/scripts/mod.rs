@@ -7,7 +7,7 @@ use crate::tenma_serial::TenmaSerial;
 
 use self::{
     keywords::TenmaScriptCommand,
-    TenmaScriptParser::{ parse_current, parse_delay, parse_voltage, ParseError },
+    TenmaScriptParser::{ parse_current, parse_delay, parse_loop_start, parse_voltage, ParseError },
 };
 
 pub struct TenmaScript {
@@ -35,35 +35,57 @@ impl TenmaScript {
     fn parse_file(
         tokens: &mut Peekable<impl Iterator<Item = String>>
     ) -> Result<Vec<TenmaScriptCommand>, ParseError> {
-        let mut x: Vec<TenmaScriptCommand> = vec![];
+        fn internal(
+            tokens: &mut Peekable<impl Iterator<Item = String>>,
+            isLoop: bool
+        ) -> Result<Vec<TenmaScriptCommand>, ParseError> {
+            let mut x: Vec<TenmaScriptCommand> = vec![];
+            loop {
+                match tokens.next() {
+                    Some(s) => {
+                        match s.as_str() {
+                            keywords::VOLTAGE_KEY => {
+                                x.push(parse_voltage(tokens)?);
+                            }
+                            keywords::CURRENT_KEY => {
+                                x.push(parse_current(tokens)?);
+                            }
+                            keywords::OFF_KEY => {
+                                x.push(TenmaScriptCommand::V { voltage: 0 });
+                            }
+                            keywords::DELAY_KEY => {
+                                x.push(parse_delay(tokens)?);
+                            }
+                            keywords::LOOP_START_KEY => {
+                                let times = parse_loop_start(tokens)?;
 
-        loop {
-            match tokens.next() {
-                Some(s) => {
-                    match s.as_str() {
-                        keywords::VOLTAGE_KEY => {
-                            x.push(parse_voltage(tokens)?);
-                        }
-                        keywords::CURRENT_KEY => {
-                            x.push(parse_current(tokens)?);
-                        }
-                        keywords::OFF_KEY => {
-                            x.push(TenmaScriptCommand::V { voltage: 0 });
-                        }
-                        keywords::DELAY_KEY => {
-                            x.push(parse_delay(tokens)?);
-                        }
+                                let commands = internal(tokens, true)?;
+                                for _ in 0..times {
+                                    for command in commands.iter() {
+                                        x.push(command.clone());
+                                    }
+                                }
+                            }
+                            keywords::LOOP_END_KEY => {
+                                return Ok(x);
+                            }
 
-                        _ => {
-                            return Err(ParseError::InvalidSymbol { symbol: s });
+                            _ => {
+                                return Err(ParseError::InvalidSymbol { symbol: s });
+                            }
                         }
                     }
-                }
-                None => {
-                    return Ok(x);
+                    None => {
+                        if isLoop {
+                            return Err(ParseError::LoopEndNotFound);
+                        }
+                        return Ok(x);
+                    }
                 }
             }
         }
+
+        internal(tokens, false)
     }
 
     pub fn display_tenma_scripts(&self) {
