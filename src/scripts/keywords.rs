@@ -5,6 +5,7 @@ pub const CURRENT_KEY: &str = "I";
 pub const VOLTAGE_KEY: &str = "V";
 
 pub const OFF_KEY: &str = "OFF";
+pub const ON_KEY: &str = "ON";
 
 pub const DELAY_KEY: &str = ":";
 
@@ -29,6 +30,7 @@ pub enum TenmaScriptCommand {
     V {
         voltage: i32,
     },
+    On,
     Off,
     Delay {
         milliseconds: u32,

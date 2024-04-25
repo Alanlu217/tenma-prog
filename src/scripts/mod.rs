@@ -50,8 +50,11 @@ impl TenmaScript {
                             keywords::CURRENT_KEY => {
                                 x.push(parse_current(tokens)?);
                             }
+                            keywords::ON_KEY => {
+                                x.push(TenmaScriptCommand::On);
+                            }
                             keywords::OFF_KEY => {
-                                x.push(TenmaScriptCommand::V { voltage: 0 });
+                                x.push(TenmaScriptCommand::Off);
                             }
                             keywords::DELAY_KEY => {
                                 x.push(parse_delay(tokens)?);
@@ -103,8 +106,11 @@ impl TenmaScript {
                 TenmaScriptCommand::V { voltage } => {
                     out.push_str(format!("Set voltage to: {}\n", voltage).as_str());
                 }
+                TenmaScriptCommand::On => {
+                    out.push_str(format!("Output On\n").as_str());
+                }
                 TenmaScriptCommand::Off => {
-                    out.push_str(format!("Set voltage to 0\n").as_str());
+                    out.push_str(format!("Output Off\n").as_str());
                 }
                 TenmaScriptCommand::Delay { milliseconds } => {
                     out.push_str(format!("Delay for: {} ms\n", milliseconds).as_str());
