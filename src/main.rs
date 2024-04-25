@@ -2,7 +2,7 @@ mod config;
 mod scripts;
 mod tenma_serial;
 
-use tenma_serial::tenma_commands::Commands;
+use tenma_serial::tenma_commands::TenmaCommand;
 
 use std::env;
 use std::process::exit;
@@ -20,5 +20,5 @@ fn main() {
         exit(1);
     });
 
-    serial.run_command(Commands::VSet { channel: 1, voltage: 10.0 })
+    serial.run_command(TenmaCommand::VSet { channel: 1, voltage: 10.0 })
 }

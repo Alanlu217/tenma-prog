@@ -1,4 +1,4 @@
-pub enum Commands {
+pub enum TenmaCommand {
     ISet {
         channel: u8,
         current: f32,
