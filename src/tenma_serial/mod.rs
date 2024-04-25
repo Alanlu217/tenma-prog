@@ -9,7 +9,7 @@ pub struct TenmaSerial {
 }
 
 impl TenmaSerial {
-    pub fn new(port: &String) -> Result<Self, std::io::Error> {
+    pub fn new(port: &str) -> Result<Self, std::io::Error> {
         let port = SerialPort::open(port, 9600)?;
 
         Ok(TenmaSerial { port })
