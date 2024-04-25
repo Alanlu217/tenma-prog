@@ -4,11 +4,11 @@ V 10
 
 
 
-I 100 : 1 min
+I 100 : 1 s
 
 : 10
 
-loop 100
+loop 2
 
 OFF
 

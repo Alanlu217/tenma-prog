@@ -21,5 +21,7 @@ fn main() {
     });
 
     let script = TenmaScript::open(config.file_path.as_str(), serial);
-    println!("{}", script.unwrap());
+
+    // println!("{}", script.unwrap());
+    script.unwrap().run_script();
 }

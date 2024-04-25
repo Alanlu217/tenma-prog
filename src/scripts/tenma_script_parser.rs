@@ -20,7 +20,7 @@ pub fn parse_voltage(
 ) -> Result<TenmaScriptCommand, ParseError> {
     match tokens.next() {
         Some(s) => {
-            if let Ok(num) = s.parse::<i32>() {
+            if let Ok(num) = s.parse::<f32>() {
                 return Ok(TenmaScriptCommand::V { voltage: num });
             } else {
                 return Err(ParseError::IntParseError { symbol: s });
@@ -37,7 +37,7 @@ pub fn parse_current(
 ) -> Result<TenmaScriptCommand, ParseError> {
     match tokens.next() {
         Some(s) => {
-            if let Ok(num) = s.parse::<i32>() {
+            if let Ok(num) = s.parse::<f32>() {
                 return Ok(TenmaScriptCommand::I { current: num });
             } else {
                 return Err(ParseError::IntParseError { symbol: s });
@@ -74,7 +74,7 @@ pub fn parse_delay(
         }
     }
 
-    Ok(TenmaScriptCommand::Delay { milliseconds: time.as_millis() as u32 })
+    Ok(TenmaScriptCommand::Delay { milliseconds: time.as_millis() as u64 })
 }
 
 pub fn parse_loop_start(tokens: &mut impl Iterator<Item = String>) -> Result<u32, ParseError> {

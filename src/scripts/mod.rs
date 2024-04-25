@@ -1,9 +1,10 @@
 mod keywords;
 mod tenma_script_parser;
 
-use std::{ fmt::Display, fs, iter::Peekable };
+use core::time;
+use std::{ fmt::Display, fs, iter::Peekable, thread };
 
-use crate::tenma_serial::TenmaSerial;
+use crate::tenma_serial::{ tenma_commands::TenmaCommand, TenmaSerial };
 
 use self::{
     keywords::TenmaScriptCommand,
@@ -95,6 +96,23 @@ impl TenmaScript {
         }
 
         internal(tokens, false)
+    }
+
+    pub fn run_script(&self) {
+        for command in self.contents.iter() {
+            match command {
+                TenmaScriptCommand::I { current } =>
+                    self.output.run_command(TenmaCommand::ISet { channel: 1, current: *current }),
+                TenmaScriptCommand::V { voltage } =>
+                    self.output.run_command(TenmaCommand::VSet { channel: 1, voltage: *voltage }),
+                TenmaScriptCommand::On => self.output.run_command(TenmaCommand::Out(true)),
+                TenmaScriptCommand::Off => self.output.run_command(TenmaCommand::Out(false)),
+                TenmaScriptCommand::Delay { milliseconds } => {
+                    println!("{}", milliseconds);
+                    thread::sleep(time::Duration::from_millis(*milliseconds));
+                }
+            }
+        }
     }
 
     #[allow(dead_code)]
