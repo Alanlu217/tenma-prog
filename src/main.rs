@@ -1,4 +1,5 @@
 mod config;
+mod scripts;
 mod tenma_serial;
 
 use tenma_serial::tenma_commands::Commands;
