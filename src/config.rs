@@ -1,7 +1,7 @@
 #[derive(Debug, PartialEq)]
 pub struct Config {
-    port: String,
-    file_path: String,
+    pub port: String,
+    pub file_path: String,
 }
 
 impl Config {
