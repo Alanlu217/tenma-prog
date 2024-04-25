@@ -2,6 +2,7 @@ mod config;
 mod scripts;
 mod tenma_serial;
 
+use scripts::TenmaScript;
 use tenma_serial::tenma_commands::TenmaCommand;
 
 use std::env;
@@ -20,5 +21,6 @@ fn main() {
         exit(1);
     });
 
-    serial.run_command(TenmaCommand::VSet { channel: 1, voltage: 10.0 })
+    let script = TenmaScript::open(config.file_path.as_str(), serial);
+    println!("{}", script.unwrap());
 }

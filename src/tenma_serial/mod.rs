@@ -18,10 +18,14 @@ impl TenmaSerial {
     pub fn run_command(&self, cmd: TenmaCommand) {
         match cmd {
             TenmaCommand::ISet { channel, current } => {
-                let _ = self.port.write(format!("ISET{}:{}", channel, current).as_bytes());
+                let _ = self
+                    .port
+                    .write(format!("ISET{}:{}", channel, current).as_bytes());
             }
             TenmaCommand::VSet { channel, voltage } => {
-                let _ = self.port.write(format!("VSET{}:{}", channel, voltage).as_bytes());
+                let _ = self
+                    .port
+                    .write(format!("VSET{}:{}", channel, voltage).as_bytes());
             }
             TenmaCommand::Beep(on) => {
                 let ch = if on { '1' } else { '0' };
