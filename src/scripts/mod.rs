@@ -61,6 +61,9 @@ impl TenmaScript {
                                 }
                             }
                         }
+                        keywords::OFF_KEY => {
+                            x.push(TenmaScriptCommand::V { voltage: 0 });
+                        }
                         keywords::DELAY_KEY => {
                             match parse_delay(tokens) {
                                 Ok(c) => x.push(c),
@@ -69,6 +72,7 @@ impl TenmaScript {
                                 }
                             }
                         }
+
                         _ => {
                             return Err(ParseError::InvalidSymbol { symbol: s });
                         }
