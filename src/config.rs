@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Config {
     port: String,
     file_path: String,
@@ -12,4 +12,14 @@ impl Config {
 
         Ok(Self { port: args[1].clone(), file_path: args[2].clone() })
     }
+}
+
+#[test]
+fn test_config_from_args() {
+    let args: Vec<String> = vec!["file_path".to_string(), "test1".to_string(), "test2".to_string()];
+
+    assert_eq!(
+        Config::from_args(&args),
+        Ok(Config { port: "test1".to_string(), file_path: "test2".to_string() })
+    );
 }
