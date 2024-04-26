@@ -8,10 +8,13 @@
 
 I {current in amps}
 
+If there is no delay following this command, a 50 millisecond delay will automatically be added.
 
 #### Voltage
 
 V {voltage in volts}
+
+If there is no delay following this command, a 50 millisecond delay will automatically be added.
 
 #### Turning off
 
@@ -21,7 +24,7 @@ OFF
 
 : {delay} {units}
 
-units are either 'min' minutes, 's' seconds or 'ms' milliseconds. Default unit is in milliseconds
+units are either 'min' minutes, 's' seconds or 'ms' milliseconds. Default unit is in seconds
 
 can be placed directly after a tenma command in the same line. e.g. 
 ```
