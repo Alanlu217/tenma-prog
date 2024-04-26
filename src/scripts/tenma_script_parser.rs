@@ -56,7 +56,7 @@ pub fn parse_delay(
     match peekable_tokens.next() {
         Some(s) => {
             if let Ok(num) = s.parse::<u64>() {
-                time = time::Duration::from_millis(num);
+                time = time::Duration::from_secs(num);
             } else {
                 return Err(ParseError::IntParseError { symbol: s.clone() });
             }
@@ -69,7 +69,7 @@ pub fn parse_delay(
 
     if let Some(s) = peekable_tokens.peek() {
         if let Ok(dur) = delay_unit_to_duration(s) {
-            time = dur * (time.as_millis() as u32);
+            time = dur * (time.as_secs() as u32);
             peekable_tokens.next();
         }
     }
