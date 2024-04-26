@@ -52,11 +52,11 @@ pub fn parse_current(
 pub fn parse_delay(
     peekable_tokens: &mut Peekable<impl Iterator<Item = String>>
 ) -> Result<TenmaScriptCommand, ParseError> {
-    let mut time: time::Duration;
+    let mut seconds: f32;
     match peekable_tokens.next() {
         Some(s) => {
-            if let Ok(num) = s.parse::<u64>() {
-                time = time::Duration::from_secs(num);
+            if let Ok(num) = s.parse::<f32>() {
+                seconds = num;
             } else {
                 return Err(ParseError::IntParseError { symbol: s.clone() });
             }
@@ -69,12 +69,14 @@ pub fn parse_delay(
 
     if let Some(s) = peekable_tokens.peek() {
         if let Ok(dur) = delay_unit_to_duration(s) {
-            time = dur * (time.as_secs() as u32);
+            seconds = (dur.as_millis() as f32) * seconds;
             peekable_tokens.next();
+
+            return Ok(TenmaScriptCommand::Delay { milliseconds: seconds as u64 });
         }
     }
 
-    Ok(TenmaScriptCommand::Delay { milliseconds: time.as_millis() as u64 })
+    Ok(TenmaScriptCommand::Delay { milliseconds: (seconds * 1000.0) as u64 })
 }
 
 pub fn parse_loop_start(tokens: &mut impl Iterator<Item = String>) -> Result<u32, ParseError> {
