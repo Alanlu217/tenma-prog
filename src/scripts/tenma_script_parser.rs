@@ -1,4 +1,3 @@
-use core::time;
 use std::iter::Peekable;
 
 use super::keywords::{ delay_unit_to_duration, TenmaScriptCommand };

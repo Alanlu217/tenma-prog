@@ -2,18 +2,14 @@ mod keywords;
 mod tenma_script_parser;
 
 use core::time;
-use std::{ fmt::Display, fs, iter::Peekable, thread };
+use std::{fmt::Display, fs, iter::Peekable, thread};
 
-use crate::tenma_serial::{ tenma_commands::TenmaCommand, TenmaSerial };
+use crate::tenma_serial::{tenma_commands::TenmaCommand, TenmaSerial};
 
 use self::{
     keywords::TenmaScriptCommand,
     tenma_script_parser::{
-        parse_current,
-        parse_delay,
-        parse_loop_start,
-        parse_voltage,
-        ParseError,
+        parse_current, parse_delay, parse_loop_start, parse_voltage, ParseError,
     },
 };
 
@@ -40,63 +36,61 @@ impl TenmaScript {
     }
 
     fn parse_file(
-        tokens: &mut Peekable<impl Iterator<Item = String>>
+        tokens: &mut Peekable<impl Iterator<Item = String>>,
     ) -> Result<Vec<TenmaScriptCommand>, ParseError> {
         fn internal(
             tokens: &mut Peekable<impl Iterator<Item = String>>,
-            is_loop: bool
+            is_loop: bool,
         ) -> Result<Vec<TenmaScriptCommand>, ParseError> {
             let mut x: Vec<TenmaScriptCommand> = vec![];
             loop {
                 match tokens.next() {
-                    Some(s) => {
-                        match s.as_str() {
-                            keywords::VOLTAGE_KEY => {
-                                x.push(parse_voltage(tokens)?);
-                                if let Some(s) = tokens.peek() {
-                                    if s != keywords::DELAY_KEY {
-                                        x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
-                                    }
+                    Some(s) => match s.as_str() {
+                        keywords::VOLTAGE_KEY => {
+                            x.push(parse_voltage(tokens)?);
+                            if let Some(s) = tokens.peek() {
+                                if s != keywords::DELAY_KEY {
+                                    x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
                                 }
-                            }
-                            keywords::CURRENT_KEY => {
-                                x.push(parse_current(tokens)?);
-                                if let Some(s) = tokens.peek() {
-                                    if s != keywords::DELAY_KEY {
-                                        x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
-                                    }
-                                }
-                            }
-                            keywords::ON_KEY => {
-                                x.push(TenmaScriptCommand::On);
-                                x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
-                            }
-                            keywords::OFF_KEY => {
-                                x.push(TenmaScriptCommand::Off);
-                                x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
-                            }
-                            keywords::DELAY_KEY => {
-                                x.push(parse_delay(tokens)?);
-                            }
-                            keywords::LOOP_START_KEY => {
-                                let times = parse_loop_start(tokens)?;
-
-                                let commands = internal(tokens, true)?;
-                                for _ in 0..times {
-                                    for command in commands.iter() {
-                                        x.push(command.clone());
-                                    }
-                                }
-                            }
-                            keywords::LOOP_END_KEY => {
-                                return Ok(x);
-                            }
-
-                            _ => {
-                                return Err(ParseError::InvalidSymbol { symbol: s });
                             }
                         }
-                    }
+                        keywords::CURRENT_KEY => {
+                            x.push(parse_current(tokens)?);
+                            if let Some(s) = tokens.peek() {
+                                if s != keywords::DELAY_KEY {
+                                    x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
+                                }
+                            }
+                        }
+                        keywords::ON_KEY => {
+                            x.push(TenmaScriptCommand::On);
+                            x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
+                        }
+                        keywords::OFF_KEY => {
+                            x.push(TenmaScriptCommand::Off);
+                            x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
+                        }
+                        keywords::DELAY_KEY => {
+                            x.push(parse_delay(tokens)?);
+                        }
+                        keywords::LOOP_START_KEY => {
+                            let times = parse_loop_start(tokens)?;
+
+                            let commands = internal(tokens, true)?;
+                            for _ in 0..times {
+                                for command in commands.iter() {
+                                    x.push(command.clone());
+                                }
+                            }
+                        }
+                        keywords::LOOP_END_KEY => {
+                            return Ok(x);
+                        }
+
+                        _ => {
+                            return Err(ParseError::InvalidSymbol { symbol: s });
+                        }
+                    },
                     None => {
                         if is_loop {
                             return Err(ParseError::LoopEndNotFound);
@@ -115,10 +109,14 @@ impl TenmaScript {
             println!("{}", TenmaScript::command_to_string(command));
 
             match command {
-                TenmaScriptCommand::I { current } =>
-                    self.output.run_command(TenmaCommand::ISet { channel: 1, current: *current }),
-                TenmaScriptCommand::V { voltage } =>
-                    self.output.run_command(TenmaCommand::VSet { channel: 1, voltage: *voltage }),
+                TenmaScriptCommand::I { current } => self.output.run_command(TenmaCommand::ISet {
+                    channel: 1,
+                    current: *current,
+                }),
+                TenmaScriptCommand::V { voltage } => self.output.run_command(TenmaCommand::VSet {
+                    channel: 1,
+                    voltage: *voltage,
+                }),
                 TenmaScriptCommand::On => self.output.run_command(TenmaCommand::Out(true)),
                 TenmaScriptCommand::Off => self.output.run_command(TenmaCommand::Out(false)),
                 TenmaScriptCommand::Delay { milliseconds } => {
@@ -175,7 +173,7 @@ fn test() {
     println!("\n\n\n\n-----------------------------STDOUT----------------------------\n\n\n");
     let x = TenmaScript::open(
         "tenma_scripts/test.tms",
-        TenmaSerial::new("/dev/tty.Bluetooth-Incoming-Port").unwrap()
+        TenmaSerial::new("/dev/tty.Bluetooth-Incoming-Port").unwrap(),
     );
 
     x.unwrap().display_tenma_scripts();

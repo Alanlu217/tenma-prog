@@ -7,6 +7,7 @@ pub enum TenmaCommand {
         channel: u8,
         voltage: f32,
     },
+    #[allow(dead_code)]
     Beep(bool),
     Out(bool),
 }
