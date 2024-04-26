@@ -59,9 +59,11 @@ impl TenmaScript {
                             }
                             keywords::ON_KEY => {
                                 x.push(TenmaScriptCommand::On);
+                                x.push(TenmaScriptCommand::Delay { milliseconds: 10 });
                             }
                             keywords::OFF_KEY => {
                                 x.push(TenmaScriptCommand::Off);
+                                x.push(TenmaScriptCommand::Delay { milliseconds: 10 });
                             }
                             keywords::DELAY_KEY => {
                                 x.push(parse_delay(tokens)?);
