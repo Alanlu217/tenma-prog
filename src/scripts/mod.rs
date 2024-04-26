@@ -53,9 +53,19 @@ impl TenmaScript {
                         match s.as_str() {
                             keywords::VOLTAGE_KEY => {
                                 x.push(parse_voltage(tokens)?);
+                                if let Some(s) = tokens.peek() {
+                                    if s != keywords::DELAY_KEY {
+                                        x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
+                                    }
+                                }
                             }
                             keywords::CURRENT_KEY => {
                                 x.push(parse_current(tokens)?);
+                                if let Some(s) = tokens.peek() {
+                                    if s != keywords::DELAY_KEY {
+                                        x.push(TenmaScriptCommand::Delay { milliseconds: 50 });
+                                    }
+                                }
                             }
                             keywords::ON_KEY => {
                                 x.push(TenmaScriptCommand::On);
