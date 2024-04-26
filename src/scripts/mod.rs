@@ -102,6 +102,8 @@ impl TenmaScript {
 
     pub fn run_script(&self) {
         for command in self.contents.iter() {
+            println!("{}", TenmaScript::command_to_string(command));
+
             match command {
                 TenmaScriptCommand::I { current } =>
                     self.output.run_command(TenmaCommand::ISet { channel: 1, current: *current }),
@@ -110,7 +112,6 @@ impl TenmaScript {
                 TenmaScriptCommand::On => self.output.run_command(TenmaCommand::Out(true)),
                 TenmaScriptCommand::Off => self.output.run_command(TenmaCommand::Out(false)),
                 TenmaScriptCommand::Delay { milliseconds } => {
-                    println!("{}", milliseconds);
                     thread::sleep(time::Duration::from_millis(*milliseconds));
                 }
             }
@@ -122,27 +123,31 @@ impl TenmaScript {
         println!("{}", self.to_string());
     }
 
+    pub fn command_to_string(command: &TenmaScriptCommand) -> String {
+        match command {
+            TenmaScriptCommand::I { current } => {
+                return format!("Set current to: {}\n", current);
+            }
+            TenmaScriptCommand::V { voltage } => {
+                return format!("Set voltage to: {}\n", voltage);
+            }
+            TenmaScriptCommand::On => {
+                return format!("Output On\n");
+            }
+            TenmaScriptCommand::Off => {
+                return format!("Output Off\n");
+            }
+            TenmaScriptCommand::Delay { milliseconds } => {
+                return format!("Delay for: {} ms\n", milliseconds);
+            }
+        }
+    }
+
     pub fn to_string(&self) -> String {
         let mut out = String::new();
 
         for line in self.contents.iter() {
-            match line {
-                TenmaScriptCommand::I { current } => {
-                    out.push_str(format!("Set current to: {}\n", current).as_str());
-                }
-                TenmaScriptCommand::V { voltage } => {
-                    out.push_str(format!("Set voltage to: {}\n", voltage).as_str());
-                }
-                TenmaScriptCommand::On => {
-                    out.push_str(format!("Output On\n").as_str());
-                }
-                TenmaScriptCommand::Off => {
-                    out.push_str(format!("Output Off\n").as_str());
-                }
-                TenmaScriptCommand::Delay { milliseconds } => {
-                    out.push_str(format!("Delay for: {} ms\n", milliseconds).as_str());
-                }
-            }
+            out.push_str(TenmaScript::command_to_string(line).as_str());
         }
 
         out
