@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 serial2 = "0.2.24"
+mlua = { version = "0.9.7", features = ["lua54"] }
