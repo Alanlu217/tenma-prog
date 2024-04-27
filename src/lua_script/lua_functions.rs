@@ -1,5 +1,5 @@
 use core::time;
-use std::{rc::Rc, thread, time::Duration};
+use std::{rc::Rc, sync::Arc, thread, time::Duration};
 
 use mlua::{Error as LuaError, Lua};
 
@@ -9,6 +9,15 @@ pub fn add_delay_func(lua: &Lua) -> Result<(), LuaError> {
     lua.globals().set(
         "delay",
         lua.create_function(move |_, a: f64| {
+            if a < 0.0 {
+                return Err(LuaError::BadArgument {
+                    to: Some("delay".to_string()),
+                    pos: 1,
+                    name: Some("time".to_string()),
+                    cause: Arc::new(LuaError::RuntimeError("delay must be positive".to_string())),
+                });
+            }
+
             thread::sleep(time::Duration::from_millis((a * 1000.0) as u64));
             Ok(())
         })?,
@@ -20,6 +29,35 @@ pub fn add_set_voltage(lua: &Lua, ser: Rc<TenmaSerial>) -> Result<(), LuaError> 
     lua.globals().set(
         "_v_delay",
         lua.create_function(move |_, a: (i64, f64, f64)| {
+            if a.0 < 1 {
+                return Err(LuaError::BadArgument {
+                    to: Some("v".to_string()),
+                    pos: 1,
+                    name: Some("channel".to_string()),
+                    cause: Arc::new(LuaError::RuntimeError(
+                        "channel must be 1 or larger".to_string(),
+                    )),
+                });
+            }
+            if a.1 < 0.0 {
+                return Err(LuaError::BadArgument {
+                    to: Some("v".to_string()),
+                    pos: 2,
+                    name: Some("voltage".to_string()),
+                    cause: Arc::new(LuaError::RuntimeError(
+                        "voltage must be positive".to_string(),
+                    )),
+                });
+            }
+            if a.2 < 0.0 {
+                return Err(LuaError::BadArgument {
+                    to: Some("v".to_string()),
+                    pos: 3,
+                    name: Some("delay".to_string()),
+                    cause: Arc::new(LuaError::RuntimeError("delay must be positive".to_string())),
+                });
+            }
+
             ser.run_command(TenmaCommand::VSet {
                 channel: a.0 as u8,
                 voltage: a.1,
@@ -51,6 +89,35 @@ pub fn add_set_current(lua: &Lua, ser: Rc<TenmaSerial>) -> Result<(), LuaError> 
     lua.globals().set(
         "_i_delay",
         lua.create_function(move |_, a: (i64, f64, f64)| {
+            if a.0 < 1 {
+                return Err(LuaError::BadArgument {
+                    to: Some("i".to_string()),
+                    pos: 1,
+                    name: Some("channel".to_string()),
+                    cause: Arc::new(LuaError::RuntimeError(
+                        "channel must be 1 or larger".to_string(),
+                    )),
+                });
+            }
+            if a.1 < 0.0 {
+                return Err(LuaError::BadArgument {
+                    to: Some("i".to_string()),
+                    pos: 2,
+                    name: Some("voltage".to_string()),
+                    cause: Arc::new(LuaError::RuntimeError(
+                        "voltage must be positive".to_string(),
+                    )),
+                });
+            }
+            if a.2 < 0.0 {
+                return Err(LuaError::BadArgument {
+                    to: Some("i".to_string()),
+                    pos: 3,
+                    name: Some("delay".to_string()),
+                    cause: Arc::new(LuaError::RuntimeError("delay must be positive".to_string())),
+                });
+            }
+
             ser.run_command(TenmaCommand::ISet {
                 channel: a.0 as u8,
                 current: a.1,
