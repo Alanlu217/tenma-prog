@@ -1,12 +1,13 @@
 mod lua_functions;
 
+#[allow(unused)]
 use std::{fs, rc::Rc};
 
 use mlua::{Error, Lua};
 
 use crate::tenma_serial::TenmaSerial;
 
-struct LuaScript {
+pub struct LuaScript {
     lua: Lua,
     script: String,
 }
@@ -28,6 +29,7 @@ impl LuaScript {
         lua_functions::add_set_voltage(lua, serial.clone())?;
         lua_functions::add_set_current(lua, serial.clone())?;
         lua_functions::add_set_out(lua, serial.clone())?;
+        lua_functions::add_set_beep(lua, serial.clone())?;
 
         Ok(())
     }
