@@ -1,22 +1,34 @@
 #[derive(Debug, PartialEq)]
 pub struct Config {
     pub file_path: String,
-    pub port: String,
+    pub port: Option<String>,
 }
 
 impl Config {
     pub fn from_args(args: &Vec<String>) -> Result<Self, String> {
-        if args.len() != 3 {
+        if !(2..=3).contains(&args.len()) {
             return Err(format!(
-                "Expected two arguments, recieved {}",
+                "Expected one or two arguments, recieved {}\n\nArguments should be in format: lua_file_path serial_port\nor: lua_file_path",
                 args.len() - 1
             ));
         }
 
-        Ok(Self {
-            file_path: args[1].clone(),
-            port: args[2].clone(),
-        })
+        match args.len() {
+            2 => Ok(Self {
+                file_path: args[1].clone(),
+                port: None,
+            }),
+            3 => Ok(Self {
+                file_path: args[1].clone(),
+                port: Some(args[2].clone()),
+            }),
+            _ => {
+                return Err(format!(
+                "Expected one or two arguments, recieved {}\n\nArguments should be in format: lua_file_path serial_port\nor: lua_file_path",
+                args.len() - 1
+            ));
+            }
+        }
     }
 }
 
@@ -31,7 +43,7 @@ fn test_config_from_args() {
     assert_eq!(
         Config::from_args(&args),
         Ok(Config {
-            port: "test1".to_string(),
+            port: Some("test1".to_string()),
             file_path: "test2".to_string()
         })
     );
