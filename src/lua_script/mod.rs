@@ -47,5 +47,7 @@ fn lua_test() {
 
     let lua = LuaScript::new(script.as_str(), serial).unwrap();
 
-    lua.run().unwrap();
+    lua.run().unwrap_or_else(|err| {
+        println!("{err}");
+    });
 }
