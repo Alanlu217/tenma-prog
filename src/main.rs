@@ -1,4 +1,5 @@
 mod config;
+mod lua_script;
 mod scripts;
 mod tenma_serial;
 
