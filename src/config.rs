@@ -1,7 +1,7 @@
 #[derive(Debug, PartialEq)]
 pub struct Config {
-    pub port: String,
     pub file_path: String,
+    pub port: String,
 }
 
 impl Config {
@@ -14,8 +14,8 @@ impl Config {
         }
 
         Ok(Self {
-            port: args[1].clone(),
-            file_path: args[2].clone(),
+            file_path: args[1].clone(),
+            port: args[2].clone(),
         })
     }
 }
