@@ -3,7 +3,7 @@ use std::{rc::Rc, sync::Arc, thread, time::Duration};
 
 use mlua::{Error as LuaError, Lua};
 
-use crate::tenma_serial::{tenma_commands::TenmaCommand, TenmaSerial};
+use crate::tenma::tenma_commands::{TenmaCommand, TenmaCommandTrait};
 
 pub fn add_delay_func(lua: &Lua) -> Result<(), LuaError> {
     lua.globals().set(
@@ -25,7 +25,7 @@ pub fn add_delay_func(lua: &Lua) -> Result<(), LuaError> {
     Ok(())
 }
 
-pub fn add_set_voltage(lua: &Lua, ser: Rc<TenmaSerial>) -> Result<(), LuaError> {
+pub fn add_set_voltage(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
     lua.globals().set(
         "_v_delay",
         lua.create_function(move |_, a: (i64, f64, f64)| {
@@ -85,7 +85,7 @@ pub fn add_set_voltage(lua: &Lua, ser: Rc<TenmaSerial>) -> Result<(), LuaError> 
     Ok(())
 }
 
-pub fn add_set_current(lua: &Lua, ser: Rc<TenmaSerial>) -> Result<(), LuaError> {
+pub fn add_set_current(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
     lua.globals().set(
         "_i_delay",
         lua.create_function(move |_, a: (i64, f64, f64)| {
@@ -145,7 +145,7 @@ pub fn add_set_current(lua: &Lua, ser: Rc<TenmaSerial>) -> Result<(), LuaError> 
     Ok(())
 }
 
-pub fn add_set_out(lua: &Lua, ser: Rc<TenmaSerial>) -> Result<(), LuaError> {
+pub fn add_set_out(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
     let ser1 = ser.clone();
     lua.globals().set(
         "out",
@@ -159,7 +159,7 @@ pub fn add_set_out(lua: &Lua, ser: Rc<TenmaSerial>) -> Result<(), LuaError> {
     Ok(())
 }
 
-pub fn add_set_beep(lua: &Lua, ser: Rc<TenmaSerial>) -> Result<(), LuaError> {
+pub fn add_set_beep(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
     let ser1 = ser.clone();
     lua.globals().set(
         "beep",

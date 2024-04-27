@@ -1,9 +1,11 @@
 mod config;
 mod lua_script;
-mod tenma_serial;
+mod tenma;
 
 use std::process::{self, exit};
 use std::{env, fs};
+
+use tenma::tenma_serial;
 
 fn main() {
     let args = env::args().collect();
@@ -28,7 +30,7 @@ fn main() {
         process::exit(1);
     });
 
-    let lua = lua_script::LuaScript::new(script.as_str(), serial).unwrap_or_else(|err| {
+    let lua = lua_script::LuaScript::new(script.as_str(), Box::new(serial)).unwrap_or_else(|err| {
         println!("{err}");
         process::exit(1);
     });

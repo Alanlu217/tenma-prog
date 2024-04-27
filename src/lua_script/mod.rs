@@ -1,11 +1,12 @@
 mod lua_functions;
 
-#[allow(unused)]
-use std::{fs, rc::Rc};
+use std::rc::Rc;
 
 use mlua::{Error, Lua};
 
-use crate::tenma_serial::TenmaSerial;
+use crate::tenma::tenma_commands::TenmaCommandTrait;
+
+#[allow(unused)]
 
 pub struct LuaScript {
     lua: Lua,
@@ -13,7 +14,7 @@ pub struct LuaScript {
 }
 
 impl LuaScript {
-    pub fn new(script: &str, serial: TenmaSerial) -> Result<Self, Error> {
+    pub fn new(script: &str, serial: Box<dyn TenmaCommandTrait>) -> Result<Self, Error> {
         let lua = Lua::new();
         let script = script.to_string();
         let serial = Rc::new(serial);
@@ -23,7 +24,7 @@ impl LuaScript {
         Ok(Self { lua, script })
     }
 
-    fn setup(lua: &Lua, serial: Rc<TenmaSerial>) -> Result<(), Error> {
+    fn setup(lua: &Lua, serial: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), Error> {
         lua_functions::add_delay_func(lua)?;
         lua_functions::add_set_voltage(lua, serial.clone())?;
         lua_functions::add_set_current(lua, serial.clone())?;
@@ -38,14 +39,16 @@ impl LuaScript {
     }
 }
 
-#[ignore]
 #[test]
 fn lua_test() {
-    let serial = TenmaSerial::new("/dev/tty.Bluetooth-Incoming-Port").unwrap();
+    use crate::tenma::tenma_command_tester::TenmaTester;
+    use std::fs;
+
+    let serial = TenmaTester {};
 
     let script = fs::read_to_string("lua/test.lua").unwrap();
 
-    let lua = LuaScript::new(script.as_str(), serial).unwrap();
+    let lua = LuaScript::new(script.as_str(), Box::new(serial)).unwrap();
 
     lua.run().unwrap_or_else(|err| {
         println!("{err}");

@@ -1,8 +1,6 @@
 use serial2::SerialPort;
 
-pub mod tenma_commands;
-
-use tenma_commands::TenmaCommand;
+use super::tenma_commands::{TenmaCommand, TenmaCommandTrait};
 
 pub struct TenmaSerial {
     port: SerialPort,
@@ -14,8 +12,10 @@ impl TenmaSerial {
 
         Ok(TenmaSerial { port })
     }
+}
 
-    pub fn run_command(&self, cmd: TenmaCommand) {
+impl TenmaCommandTrait for TenmaSerial {
+    fn run_command(&self, cmd: TenmaCommand) {
         match cmd {
             TenmaCommand::ISet { channel, current } => {
                 let _ = self
