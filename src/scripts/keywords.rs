@@ -24,15 +24,9 @@ pub fn delay_unit_to_duration(unit: &str) -> Result<time::Duration, String> {
 
 #[derive(Clone)]
 pub enum TenmaScriptCommand {
-    I {
-        current: f32,
-    },
-    V {
-        voltage: f32,
-    },
+    I { current: f64 },
+    V { voltage: f64 },
     On,
     Off,
-    Delay {
-        milliseconds: u64,
-    },
+    Delay { milliseconds: u64 },
 }

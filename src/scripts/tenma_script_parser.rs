@@ -1,25 +1,21 @@
 use std::iter::Peekable;
 
-use super::keywords::{ delay_unit_to_duration, TenmaScriptCommand };
+use super::keywords::{delay_unit_to_duration, TenmaScriptCommand};
 
 #[derive(Debug)]
 pub enum ParseError {
-    InvalidSymbol {
-        symbol: String,
-    },
+    InvalidSymbol { symbol: String },
     LoopEndNotFound,
-    IntParseError {
-        symbol: String,
-    },
+    IntParseError { symbol: String },
     MissingValue,
 }
 
 pub fn parse_voltage(
-    tokens: &mut impl Iterator<Item = String>
+    tokens: &mut impl Iterator<Item = String>,
 ) -> Result<TenmaScriptCommand, ParseError> {
     match tokens.next() {
         Some(s) => {
-            if let Ok(num) = s.parse::<f32>() {
+            if let Ok(num) = s.parse::<f64>() {
                 return Ok(TenmaScriptCommand::V { voltage: num });
             } else {
                 return Err(ParseError::IntParseError { symbol: s });
@@ -32,11 +28,11 @@ pub fn parse_voltage(
 }
 
 pub fn parse_current(
-    tokens: &mut impl Iterator<Item = String>
+    tokens: &mut impl Iterator<Item = String>,
 ) -> Result<TenmaScriptCommand, ParseError> {
     match tokens.next() {
         Some(s) => {
-            if let Ok(num) = s.parse::<f32>() {
+            if let Ok(num) = s.parse::<f64>() {
                 return Ok(TenmaScriptCommand::I { current: num });
             } else {
                 return Err(ParseError::IntParseError { symbol: s });
@@ -49,7 +45,7 @@ pub fn parse_current(
 }
 
 pub fn parse_delay(
-    peekable_tokens: &mut Peekable<impl Iterator<Item = String>>
+    peekable_tokens: &mut Peekable<impl Iterator<Item = String>>,
 ) -> Result<TenmaScriptCommand, ParseError> {
     let mut seconds: f32;
     match peekable_tokens.next() {
@@ -71,11 +67,15 @@ pub fn parse_delay(
             seconds = (dur.as_millis() as f32) * seconds;
             peekable_tokens.next();
 
-            return Ok(TenmaScriptCommand::Delay { milliseconds: seconds as u64 });
+            return Ok(TenmaScriptCommand::Delay {
+                milliseconds: seconds as u64,
+            });
         }
     }
 
-    Ok(TenmaScriptCommand::Delay { milliseconds: (seconds * 1000.0) as u64 })
+    Ok(TenmaScriptCommand::Delay {
+        milliseconds: (seconds * 1000.0) as u64,
+    })
 }
 
 pub fn parse_loop_start(tokens: &mut impl Iterator<Item = String>) -> Result<u32, ParseError> {
