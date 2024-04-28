@@ -5,6 +5,18 @@ use mlua::{Error as LuaError, Lua};
 
 use crate::tenma::tenma_commands::{TenmaCommand, TenmaCommandTrait};
 
+pub fn add_channel_var(lua: &Lua) -> Result<(), LuaError> {
+    lua.globals().set("_channel", 1)?;
+    lua.load(
+        r#"
+    ch = function(a)
+        _channel = a
+    end
+    "#,
+    )
+    .exec()
+}
+
 pub fn add_delay_func(lua: &Lua) -> Result<(), LuaError> {
     lua.globals().set(
         "delay",
@@ -73,9 +85,9 @@ pub fn add_set_voltage(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result
         r#"
     v = function (volt, delay)
         if not delay then
-            _v_delay(1, volt, 0.05)
+            _v_delay(_channel, volt, 0.05)
         else
-            _v_delay(1, volt, delay)
+            _v_delay(_channel, volt, delay)
         end
     end
     "#,
@@ -133,9 +145,9 @@ pub fn add_set_current(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result
         r#"
     i = function (volt, delay)
         if not delay then
-            _i_delay(1, volt, 0.05)
+            _i_delay(_channel, volt, 0.05)
         else
-            _i_delay(1, volt, delay)
+            _i_delay(_channel, volt, delay)
         end
     end
     "#,
@@ -174,8 +186,10 @@ pub fn add_set_beep(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<()
 pub fn add_get_voltage(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
     lua.globals().set(
         "getv",
-        lua.create_function(move |_, _: ()| {
-            if let Some(num) = ser.run_command(TenmaCommand::VGet { channel: 1 }) {
+        lua.create_function(move |l, _: ()| {
+            if let Some(num) = ser.run_command(TenmaCommand::VGet {
+                channel: l.globals().get("_channel")?,
+            }) {
                 return Ok(num);
             }
             Err(LuaError::RuntimeError(
@@ -190,8 +204,10 @@ pub fn add_get_voltage(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result
 pub fn add_get_current(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
     lua.globals().set(
         "geti",
-        lua.create_function(move |_, _: ()| {
-            if let Some(num) = ser.run_command(TenmaCommand::IGet { channel: 1 }) {
+        lua.create_function(move |l, _: ()| {
+            if let Some(num) = ser.run_command(TenmaCommand::IGet {
+                channel: l.globals().get("_channel")?,
+            }) {
                 return Ok(num);
             }
             Err(LuaError::RuntimeError(
