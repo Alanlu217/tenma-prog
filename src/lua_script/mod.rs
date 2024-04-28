@@ -30,6 +30,8 @@ impl LuaScript {
         lua_functions::add_set_current(lua, serial.clone())?;
         lua_functions::add_set_out(lua, serial.clone())?;
         lua_functions::add_set_beep(lua, serial.clone())?;
+        lua_functions::add_get_voltage(lua, serial.clone())?;
+        lua_functions::add_get_current(lua, serial.clone())?;
 
         Ok(())
     }

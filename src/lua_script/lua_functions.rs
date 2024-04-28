@@ -170,3 +170,35 @@ pub fn add_set_beep(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<()
 
     Ok(())
 }
+
+pub fn add_get_voltage(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
+    lua.globals().set(
+        "getv",
+        lua.create_function(move |_, _: ()| {
+            if let Some(num) = ser.run_command(TenmaCommand::VGet { channel: 1 }) {
+                return Ok(num);
+            }
+            Err(LuaError::RuntimeError(
+                "Bad / No response from tenma".to_string(),
+            ))
+        })?,
+    )?;
+
+    Ok(())
+}
+
+pub fn add_get_current(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
+    lua.globals().set(
+        "geti",
+        lua.create_function(move |_, _: ()| {
+            if let Some(num) = ser.run_command(TenmaCommand::IGet { channel: 1 }) {
+                return Ok(num);
+            }
+            Err(LuaError::RuntimeError(
+                "Bad / No response from tenma".to_string(),
+            ))
+        })?,
+    )?;
+
+    Ok(())
+}
