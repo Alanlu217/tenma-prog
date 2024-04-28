@@ -10,7 +10,7 @@ pub fn add_serial_var(lua: &Lua) -> Result<(), LuaError> {
     lua.load(
         r#"
     ser = function(a)
-        _serial = a
+        _serial = a - 1
     end
     "#,
     )
