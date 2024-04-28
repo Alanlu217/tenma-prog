@@ -1,10 +1,12 @@
 use super::tenma_commands::{command_to_str, TenmaCommand, TenmaCommandTrait};
 
-pub struct TenmaTester;
+pub struct TenmaTester {
+    pub port: usize,
+}
 
 impl TenmaCommandTrait for TenmaTester {
     fn run_command(&self, cmd: TenmaCommand) -> Option<f64> {
-        println!("{}", command_to_str(&cmd));
+        println!("{} on Port {}", command_to_str(&cmd), self.port);
 
         match cmd {
             TenmaCommand::IGet { channel: _ } => Some(0.0),
