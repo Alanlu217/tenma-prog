@@ -146,11 +146,10 @@ pub fn add_set_current(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result
 }
 
 pub fn add_set_out(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
-    let ser1 = ser.clone();
     lua.globals().set(
         "out",
         lua.create_function(move |_, a: bool| {
-            ser1.run_command(TenmaCommand::Out(a));
+            ser.run_command(TenmaCommand::Out(a));
             thread::sleep(Duration::from_millis(50));
             Ok(())
         })?,
@@ -160,11 +159,10 @@ pub fn add_set_out(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(),
 }
 
 pub fn add_set_beep(lua: &Lua, ser: Rc<Box<dyn TenmaCommandTrait>>) -> Result<(), LuaError> {
-    let ser1 = ser.clone();
     lua.globals().set(
         "beep",
         lua.create_function(move |_, a: bool| {
-            ser1.run_command(TenmaCommand::Beep(a));
+            ser.run_command(TenmaCommand::Beep(a));
             thread::sleep(Duration::from_millis(50));
             Ok(())
         })?,
