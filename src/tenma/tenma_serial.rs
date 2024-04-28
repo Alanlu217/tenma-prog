@@ -1,4 +1,4 @@
-use std::{io::Read, num::ParseFloatError};
+use std::num::ParseFloatError;
 
 use serial2::SerialPort;
 
