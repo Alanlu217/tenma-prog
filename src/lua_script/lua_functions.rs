@@ -3,7 +3,10 @@ use std::{rc::Rc, sync::Arc, thread};
 
 use mlua::{Error as LuaError, Lua};
 
-use crate::tenma::tenma_commands::{TenmaCommand, TenmaCommandTrait};
+use crate::{
+    tenma::tenma_commands::{TenmaCommand, TenmaCommandTrait},
+    util::get_range,
+};
 
 pub fn add_serial_var(lua: &Lua) -> Result<(), LuaError> {
     lua.globals().set("_serial", 0)?;
@@ -27,6 +30,28 @@ pub fn add_channel_var(lua: &Lua) -> Result<(), LuaError> {
     "#,
     )
     .exec()
+}
+
+pub fn add_range_func(lua: &Lua) -> Result<(), LuaError> {
+    lua.globals().set(
+        "_range",
+        lua.create_function(move |_, a: (f64, f64, f64)| Ok(get_range(a.0, a.1, a.2)))?,
+    )?;
+    lua.load(
+        r#"
+    function range(start, e, step)
+        step = step or 1
+        local i = 0
+        local t = _range(start, e, step)
+        return function ()
+            i = i + 1
+            return t[i]
+        end
+    end
+    "#,
+    )
+    .exec()?;
+    Ok(())
 }
 
 pub fn add_delay_func(lua: &Lua) -> Result<(), LuaError> {

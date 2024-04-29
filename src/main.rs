@@ -1,6 +1,7 @@
 mod config;
 mod lua_script;
 mod tenma;
+mod util;
 
 use std::process::{self, exit};
 use std::{env, fs};

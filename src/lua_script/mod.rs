@@ -27,6 +27,7 @@ impl LuaScript {
     fn setup(lua: &Lua, serials: Rc<Vec<Box<dyn TenmaCommandTrait>>>) -> Result<(), Error> {
         lua_functions::add_serial_var(lua)?; // Must go before others
         lua_functions::add_channel_var(lua)?; // Must go before others
+        lua_functions::add_range_func(lua)?;
         lua_functions::add_delay_func(lua)?;
         lua_functions::add_set_voltage(lua, serials.clone())?;
         lua_functions::add_set_current(lua, serials.clone())?;
