@@ -6,7 +6,7 @@ pub struct TenmaTester {
 
 impl TenmaCommandTrait for TenmaTester {
     fn run_command(&self, cmd: TenmaCommand) -> Option<f64> {
-        println!("{} on Port {}", command_to_str(&cmd), self.port);
+        println!("{} on Port {}", command_to_str(&cmd), self.port + 1);
 
         match cmd {
             TenmaCommand::IGet { channel: _ } => Some(0.0),
